@@ -136,13 +136,17 @@ def get_summary(results_df):
             'total_amount': 0,
             'count': 0,
             'top_category': 'N/A',
-            'top_amount': 0
+            'top_amount': 0,
+                    'detail': 'No overstated expenses detected.'
         }
     
+    top_category = results_df.iloc[0]['category'] if len(results_df) > 0 else 'N/A'
+    top_amount = results_df.iloc[0]['transaction_amount'] if len(results_df) > 0 else 0
     return {
         'total_flagged': len(results_df),
         'total_amount': results_df['transaction_amount'].sum(),
         'count': len(results_df),
-        'top_category': results_df.iloc[0]['category'] if len(results_df) > 0 else 'N/A',
-        'top_amount': results_df.iloc[0]['transaction_amount'] if len(results_df) > 0 else 0
+        'top_category': top_category,
+        'top_amount': top_amount,
+        'detail': f'{len(results_df)} overstated expense categories. Top: {top_category} (NGN {top_amount:,.2f})'
     }

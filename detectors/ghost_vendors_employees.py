@@ -219,21 +219,47 @@ def detect_ghost_employees(df_payroll, df_employee_master=None):
     return result_df
 
 
-def get_summary(results_df):
+def get_summary(results):
     """Return summary stats for ghost vendor/employee detection."""
-    if results_df is None or results_df.empty:
+    # Handle dict format with 'vendors' and 'employees' keys
+    if isinstance(results, dict):
+        all_dfs = []
+        for key in ['vendors', 'employees']:
+            df = results.get(key)
+            if df is not None and isinstance(df, pd.DataFrame) and not df.empty:
+                all_dfs.append(df)
+        if not all_dfs:
+            return {
+                'total_flagged': 0,
+                'total_amount': 0,
+                'count': 0,
+                'top_entity': 'N/A',
+                'top_amount': 0,
+                'detail': 'No ghost vendors or employees detected'
+            }
+        combined = pd.concat(all_dfs, ignore_index=True)
+    elif results is None or (hasattr(results, 'empty') and results.empty):
         return {
             'total_flagged': 0,
             'total_amount': 0,
             'count': 0,
             'top_entity': 'N/A',
-            'top_amount': 0
+            'top_amount': 0,
+            'detail': 'No ghost vendors or employees detected'
         }
+    else:
+        combined = results
+    
+    total_amount = combined['total_paid'].sum() if 'total_paid' in combined.columns and len(combined) > 0 else 0
+    count = len(combined)
+    top_name = combined.iloc[0]['name'] if len(combined) > 0 else 'N/A'
+    top_amount = combined.iloc[0]['total_paid'] if len(combined) > 0 and 'total_paid' in combined.columns else 0
     
     return {
-        'total_flagged': len(results_df),
-        'total_amount': results_df['total_paid'].sum(),
-        'count': len(results_df),
-        'top_entity': results_df.iloc[0]['name'] if len(results_df) > 0 else 'N/A',
-        'top_amount': results_df.iloc[0]['total_paid'] if len(results_df) > 0 else 0
+        'total_flagged': count,
+        'total_amount': total_amount,
+        'count': count,
+        'top_entity': top_name,
+        'top_amount': top_amount,
+        'detail': f'{count} ghost entities detected. Top: {top_name} (NGN {top_amount:,.2f})'
     }

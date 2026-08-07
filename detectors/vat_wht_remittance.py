@@ -152,13 +152,17 @@ def get_summary(results_df):
             'total_amount': 0,
             'count': 0,
             'top_issue': 'N/A',
-            'top_amount': 0
+            'top_amount': 0,
+                    'detail': 'No VAT/WHT issues detected.'
         }
     
+    top_issue = results_df.iloc[0]['issue_type'] if len(results_df) > 0 else 'N/A'
+    top_amount = results_df.iloc[0]['estimated_liability'] if len(results_df) > 0 else 0
     return {
         'total_flagged': len(results_df),
         'total_amount': results_df['estimated_liability'].sum(),
         'count': len(results_df),
-        'top_issue': results_df.iloc[0]['issue_type'] if len(results_df) > 0 else 'N/A',
-        'top_amount': results_df.iloc[0]['estimated_liability'] if len(results_df) > 0 else 0
+        'top_issue': top_issue,
+        'top_amount': top_amount,
+        'detail': f'{len(results_df)} VAT/WHT issues found. Top issue: {top_issue} (NGN {top_amount:,.2f})'
     }

@@ -113,13 +113,17 @@ def get_summary(results_df):
             'total_amount': 0,
             'count': 0,
             'top_vendor': 'N/A',
-            'top_amount': 0
+            'top_amount': 0,
+                    'detail': 'No duplicate payments detected.'
         }
     
+    top_vendor = results_df.iloc[0]['vendor_name'] if len(results_df) > 0 else 'N/A'
+    top_amount = results_df.iloc[0]['flagged_amount'] if len(results_df) > 0 else 0
     return {
         'total_flagged': len(results_df),
         'total_amount': results_df['flagged_amount'].sum(),
         'count': len(results_df),
-        'top_vendor': results_df.iloc[0]['vendor_name'] if len(results_df) > 0 else 'N/A',
-        'top_amount': results_df.iloc[0]['flagged_amount'] if len(results_df) > 0 else 0
+        'top_vendor': top_vendor,
+        'top_amount': top_amount,
+        'detail': f'{len(results_df)} duplicate payments found. Top: {top_vendor} (NGN {top_amount:,.2f})'
     }

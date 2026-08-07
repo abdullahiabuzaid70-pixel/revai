@@ -123,14 +123,19 @@ def get_summary(results_df):
             'count': 0,
             'missed_count': 0,
             'at_risk_count': 0,
-            'top_penalty': 0
+            'top_penalty': 0,
+            'detail': 'No tax filing risks detected. All filings are on time.'
         }
     
+    missed_count = len(results_df[results_df['status'] == 'Missed']) if 'status' in results_df.columns else 0
+    at_risk_count = len(results_df[results_df['status'] == 'At Risk']) if 'status' in results_df.columns else 0
+    top_penalty = results_df['estimated_penalty'].max() if len(results_df) > 0 else 0
     return {
         'total_flagged': len(results_df),
         'total_amount': results_df['estimated_penalty'].sum(),
         'count': len(results_df),
-        'missed_count': len(results_df[results_df['status'] == 'Missed']),
-        'at_risk_count': len(results_df[results_df['status'] == 'At Risk']),
-        'top_penalty': results_df['estimated_penalty'].max()
+        'missed_count': missed_count,
+        'at_risk_count': at_risk_count,
+        'top_penalty': top_penalty,
+        'detail': f'{len(results_df)} tax filing risks. Missed: {missed_count}, At risk: {at_risk_count}'
     }
