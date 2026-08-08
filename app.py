@@ -876,7 +876,7 @@ Total Leakage: NGN {total_leakage:,.2f}
         <div style="background: #0F172A; padding: 20px 24px; border-radius: 14px; text-align: center; margin-top: 16px;">
             <h3 style="color: white; margin: 0; font-size: 16px;">Need help recovering your leaked money?</h3>
             <p style="color: #94A3B8; margin: 8px 0 0 0; font-size: 13px;">Schedule a walkthrough to review each finding and build a recovery plan.</p>
-            <p style="color: #60A5FA; margin: 10px 0 0 0; font-weight: 600; font-size: 13px;">WhatsApp: +234 800 000 0000 | Email: hello@revai.ng</p>
+            <p style="color: #60A5FA; margin: 10px 0 0 0; font-weight: 600; font-size: 13px;">WhatsApp: +234 704 929 4373 | Email: abuzaidabdullahi531@gmail.com</p>
         </div>
         """, unsafe_allow_html=True)
 
