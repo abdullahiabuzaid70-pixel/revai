@@ -186,6 +186,7 @@ if 'data_loaded' not in st.session_state:
     st.session_state.total_leakage = 0
     st.session_state.leakages = {}
     st.session_state.is_demo = False
+    st.session_state.is_unlocked = False
 
 # === HERO HEADER ===
 st.markdown("""
@@ -337,10 +338,27 @@ if ap_file or payroll_file or tax_file:
         if st.session_state.ap_data is not None or st.session_state.payroll_data is not None:
             st.session_state.data_loaded = True
             st.session_state.is_demo = False
+            st.session_state.is_unlocked = False
             st.session_state.company_name = company_name or "Uploaded Company"
             st.session_state.company_revenue = company_revenue
             st.session_state.audit_period = audit_period
             st.rerun()
+
+
+# === ACCESS CODE (Unlock Full Access) ===
+ACCESS_CODE = "REVAI-F4F49AD4"
+
+if not (st.session_state.get("is_demo", False) or st.session_state.get("is_unlocked", False)):
+    with st.sidebar:
+        st.markdown("---")
+        st.markdown("### Unlock Full Access")
+        unlock_input = st.text_input("Enter Access Code", type="password", placeholder="Got a code? Enter it here")
+        if unlock_input:
+            if unlock_input.strip().upper() == ACCESS_CODE:
+                st.session_state.is_unlocked = True
+                st.sidebar.success("Access unlocked! Full findings enabled.")
+            else:
+                st.sidebar.error("Invalid code. Contact +234 704 929 4373")
 
 # === MAIN CONTENT ===
 
@@ -572,7 +590,7 @@ else:
         col1, col2 = st.columns(2)
 
         with col1:
-            if st.session_state.get("is_demo", False) and st.button("Download PDF Report", type="primary", use_container_width=True):
+            if (st.session_state.get("is_demo", False) or st.session_state.get("is_unlocked", False)) and st.button("Download PDF Report", type="primary", use_container_width=True):
                 with st.spinner("Generating report..."):
                     # Build detection summaries
                     det_summaries = []
@@ -702,7 +720,7 @@ Total Leakage: NGN {total_leakage:,.2f}
                     )
 
 
-            if not st.session_state.get("is_demo", False):
+            if not (st.session_state.get("is_demo", False) or st.session_state.get("is_unlocked", False)):
                 st.markdown("""
                 <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 24px; text-align: center;">
                     <p style="font-size: 16px; font-weight: 700; color: #0F172A; margin: 0 0 8px 0;">PDF Report Locked</p>
@@ -712,7 +730,7 @@ Total Leakage: NGN {total_leakage:,.2f}
                 </div>
                 """, unsafe_allow_html=True)
         with col2:
-            if st.session_state.get("is_demo", False) and st.button("Download Excel (All Findings)", type="primary", use_container_width=True):
+            if (st.session_state.get("is_demo", False) or st.session_state.get("is_unlocked", False)) and st.button("Download Excel (All Findings)", type="primary", use_container_width=True):
                 output = io.BytesIO()
                 with pd.ExcelWriter(output, engine='openpyxl') as writer:
                     # Summary sheet
@@ -762,7 +780,7 @@ Total Leakage: NGN {total_leakage:,.2f}
                 )
 
 
-            if not st.session_state.get("is_demo", False):
+            if not (st.session_state.get("is_demo", False) or st.session_state.get("is_unlocked", False)):
                 st.markdown("""
                 <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 24px; text-align: center;">
                     <p style="font-size: 16px; font-weight: 700; color: #0F172A; margin: 0 0 8px 0;">📊 Excel Export Locked</p>
@@ -775,7 +793,7 @@ Total Leakage: NGN {total_leakage:,.2f}
         # === DETAILED FINDINGS TABS ===
         st.markdown("---")
         st.markdown("### Detailed Findings")
-        if not st.session_state.get("is_demo", False):
+        if not (st.session_state.get("is_demo", False) or st.session_state.get("is_unlocked", False)):
             st.markdown("<div style=\"background: #FFF7ED; border: 1px solid #FDBA74; border-radius: 8px; padding: 12px 16px; margin-bottom: 16px;\"><p style=\"color: #9A3412; font-size: 13px; margin: 0;\"><strong>Free Preview:</strong> Showing limited findings. Contact <strong>+234 704 929 4373</strong> to unlock the full report.</p></div>", unsafe_allow_html=True)
 
         # Build tab names with counts
@@ -844,7 +862,7 @@ Total Leakage: NGN {total_leakage:,.2f}
                             st.markdown("**Ghost Vendors**")
                             display_cols = [c for c in ['name', 'red_flag_reason', 'total_paid', 'risk_level', 'bank_account'] if c in data['vendors'].columns]
                             vendor_df = data['vendors'][display_cols]
-                            if not st.session_state.get('is_demo', False) and len(vendor_df) > 3:
+                            if not (st.session_state.get('is_demo', False) or st.session_state.get('is_unlocked', False)) and len(vendor_df) > 3:
                                 st.dataframe(vendor_df.head(3), use_container_width=True, hide_index=True)
                                 st.markdown(f'<p style="color: #64748B; font-size: 12px; padding: 8px 0;">Showing 3 of {len(vendor_df)} ghost vendors. <strong>Contact +234 704 929 4373 to unlock all findings.</strong></p>', unsafe_allow_html=True)
                             else:
@@ -854,7 +872,7 @@ Total Leakage: NGN {total_leakage:,.2f}
                             st.markdown("**Ghost Employees**")
                             display_cols = [c for c in ['name', 'red_flag_reason', 'total_paid', 'risk_level', 'bank_account'] if c in data['employees'].columns]
                             emp_df = data['employees'][display_cols]
-                            if not st.session_state.get('is_demo', False) and len(emp_df) > 3:
+                            if not (st.session_state.get('is_demo', False) or st.session_state.get('is_unlocked', False)) and len(emp_df) > 3:
                                 st.dataframe(emp_df.head(3), use_container_width=True, hide_index=True)
                                 st.markdown(f'<p style="color: #64748B; font-size: 12px; padding: 8px 0;">Showing 3 of {len(emp_df)} ghost employees. <strong>Contact +234 704 929 4373 to unlock all findings.</strong></p>', unsafe_allow_html=True)
                             else:
@@ -863,7 +881,7 @@ Total Leakage: NGN {total_leakage:,.2f}
                         if not has_data:
                             st.success("No ghost vendors or employees detected.")
                     elif isinstance(data, pd.DataFrame) and len(data) > 0:
-                        if not st.session_state.get('is_demo', False) and len(data) > 3:
+                        if not (st.session_state.get('is_demo', False) or st.session_state.get('is_unlocked', False)) and len(data) > 3:
                             st.dataframe(data.head(3), use_container_width=True, hide_index=True)
                             st.markdown(f'<p style="color: #64748B; font-size: 12px; padding: 8px 0;">Showing 3 of {len(data)} flagged items. <strong>Contact +234 704 929 4373 to unlock all {len(data)} findings.</strong></p>', unsafe_allow_html=True)
                         else:
@@ -928,5 +946,6 @@ Total Leakage: NGN {total_leakage:,.2f}
             st.session_state.results = {}
             st.session_state.leakages = {}
             st.session_state.is_demo = False
+            st.session_state.is_unlocked = False
             st.session_state.total_leakage = 0
             st.rerun()
