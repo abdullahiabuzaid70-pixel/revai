@@ -66,7 +66,7 @@ def detect_ghost_vendors(df_ap, df_vendor_master=None):
     
     one_payment_vendors = vendor_payment_counts[
         (vendor_payment_counts['payment_count'] == 1) & 
-        (vendor_payment_counts['total_amount'] >= 200000)
+        (vendor_payment_counts['total_amount'] >= 1000000)
     ]
     
     for _, row in one_payment_vendors.iterrows():
@@ -78,7 +78,7 @@ def detect_ghost_vendors(df_ap, df_vendor_master=None):
             'bank_account': str(bank),
             'red_flag_reason': 'Single large payment (hit-and-run pattern)',
             'total_paid': row['total_amount'],
-            'risk_level': 'Medium' if row['total_amount'] >= 200000 else 'Low',
+            'risk_level': 'Medium' if row['total_amount'] >= 5000000 else 'Low',
             'details': f"Vendor '{row['vendor_name']}' received only one payment of NGN {row['total_amount']:,.2f} — potential ghost vendor"
         })
     
